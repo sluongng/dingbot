@@ -120,20 +120,20 @@ func (c *Client) SendMarkdown(mdMessage MarkdownMessage) error {
 	return err
 }
 
-// SendSingleActionCard create a message with ActionCard type
-func (c *Client) SendSingleActionCard(actionCard SingleActionCardMessage) error {
+// SendSingleAction create a message with SingleAction type
+func (c *Client) SendSingleAction(actionCard SingleActionCardMessage) error {
 	err := c.send(actionCard)
 	return err
 }
 
-// SendMutliActionCard create a message with ActionCard type
-func (c *Client) SendMutliActionCard(actionCard MultiActionCardMessage) error {
+// SendMutliAction create a message with MultiAction type
+func (c *Client) SendMutliAction(actionCard MultiActionCardMessage) error {
 	err := c.send(actionCard)
 	return err
 }
 
-// SendFeedCard create a message with FeedCard type
-func (c *Client) SendFeedCard(feedCard FeedCardMessage) error {
+// SendFeed create a message with Feed type
+func (c *Client) SendFeed(feedCard FeedCardMessage) error {
 	err := c.send(feedCard)
 	return err
 }
