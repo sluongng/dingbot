@@ -3,6 +3,7 @@ package dingbot
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -16,7 +17,7 @@ type Client struct {
 	httpClient  *http.Client
 }
 
-type RespErr struct {
+type respErr struct {
 	ErrCode int
 	ErrMsg  string
 }
@@ -80,8 +81,8 @@ type MultiActionCardMessage struct {
 	ActionCard struct {
 		Title          string `json:"title"`
 		Text           string `json:"text"`
-		HideAvatar     string `json:"hideAvatar"`
-		BtnOrientation string `json:"btnOrientation"`
+		HideAvatar     string `json:"hideAvatar,omnitempty"`
+		BtnOrientation string `json:"btnOrientation,omnitempty"`
 		Btns           []struct {
 			Title     string `json:"title"`
 			ActionURL string `json:"actionURL"`
@@ -101,42 +102,56 @@ type FeedCardMessage struct {
 	} `json:"feedCard"`
 }
 
-// TextMessage create a message with Text type
-func (c *Client) TextMessage() error {
-
-	// Todo implement Client.TextMessage()
-
-	return nil
+// SendText create a message with Text type
+func (c *Client) SendText(textMsg TextMessage) error {
+	err := c.send(textMsg)
+	return err
 }
 
-// LinkMessage create a message with Link type
-func (c *Client) LinkMessage() error {
-
-	// Todo implement Client.LinkMessage()
-
-	return nil
+// SendLink create a message with Link type
+func (c *Client) SendLink(linkMessage LinkMessage) error {
+	err := c.send(linkMessage)
+	return err
 }
 
-// MarkdownMessage create a message with Markdown type
-func (c *Client) MarkdownMessage() error {
-
-	// Todo implement Client.MarkdownMessage()
-
-	return nil
+// SendMarkdown create a message with Markdown type
+func (c *Client) SendMarkdown(mdMessage MarkdownMessage) error {
+	err := c.send(mdMessage)
+	return err
 }
 
-// ActionCardMessage create a message with ActionCard type
-func (c *Client) ActionCardMessage() error {
-
-	// Todo implement Client.ActionCardMessage()
-
-	return nil
+// SendSingleActionCard create a message with ActionCard type
+func (c *Client) SendSingleActionCard(actionCard SingleActionCardMessage) error {
+	err := c.send(actionCard)
+	return err
 }
 
-// FeedCardMessage create a message with FeedCard type
-func (c *Client) FeedCardMessage() error {
+// SendMutliActionCard create a message with ActionCard type
+func (c *Client) SendMutliActionCard(actionCard MultiActionCardMessage) error {
+	err := c.send(actionCard)
+	return err
+}
 
-	// Todo implement Client.FeedCardMessage()
+// SendFeedCard create a message with FeedCard type
+func (c *Client) SendFeedCard(feedCard FeedCardMessage) error {
+	err := c.send(feedCard)
+	return err
+}
+
+func (c *Client) send(msg interface{}) error {
+	req, err := c.newRobot(msg)
+	if err != nil {
+		return err
+	}
+
+	var res respErr
+	_, err = c.do(req, &res)
+	if err != nil {
+		return err
+	}
+	if res.ErrCode != 0 {
+		return fmt.Errorf(res.ErrMsg)
+	}
 
 	return nil
 }
