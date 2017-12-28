@@ -16,10 +16,95 @@ type Client struct {
 	httpClient  *http.Client
 }
 
+type RespErr struct {
+	ErrCode int
+	ErrMsg  string
+}
+
+type coreMsg struct {
+	MsgType string `json:"msgtype"`
+}
+
+// TextMessage is used to construct Text Message body
+type TextMessage struct {
+	*coreMsg
+	Text struct {
+		Content string `json:"content"`
+	} `json:"text"`
+	At struct {
+		AtMobile []string `json:"atMobiles,omnitempty"`
+		IsAtAll  bool     `json:"isAtAll,omnitempty"`
+	} `json:"at,omnitempty"`
+}
+
+// LinkMessage is used to construct Link Message body
+type LinkMessage struct {
+	*coreMsg
+	Link struct {
+		Text       string `json:"text"`
+		Title      string `json:"title"`
+		PicURL     string `json:"picUrl"`
+		MessageURL string `json:"messageUrl"`
+	} `json:"link"`
+}
+
+// MarkdownMessage is used to construct Markdown Message body
+type MarkdownMessage struct {
+	*coreMsg
+	Markdown struct {
+		Title string `json:"title"`
+		Text  string `json:"text"`
+	} `json:"markdown"`
+	At struct {
+		AtMobiles []string `json:"atMobiles,omnitempty"`
+		IsAtAll   bool     `json:"isAtAll,omnitempty"`
+	} `json:"at,omnitempty"`
+}
+
+// SingleActionCardMessage is used to construct ActionCard Message body
+type SingleActionCardMessage struct {
+	*coreMsg
+	ActionCard struct {
+		Title          string `json:"title"`
+		Text           string `json:"text"`
+		HideAvatar     string `json:"hideAvatar,omnitempty"`
+		BtnOrientation string `json:"btnOrientation,omnitempty"`
+		SingleTitle    string `json:"singleTitle"`
+		SingleURL      string `json:"singleURL"`
+	} `json:"actionCard"`
+}
+
+// MultiActionCardMessage is used to construct ActionCard Message body
+type MultiActionCardMessage struct {
+	*coreMsg
+	ActionCard struct {
+		Title          string `json:"title"`
+		Text           string `json:"text"`
+		HideAvatar     string `json:"hideAvatar"`
+		BtnOrientation string `json:"btnOrientation"`
+		Btns           []struct {
+			Title     string `json:"title"`
+			ActionURL string `json:"actionURL"`
+		} `json:"btns"`
+	} `json:"actionCard"`
+}
+
+// FeedCardMessage is used to construct FeedCard Message body
+type FeedCardMessage struct {
+	*coreMsg
+	FeedCard struct {
+		Links []struct {
+			Title      string `json:"title"`
+			MessageURL string `json:"messageURL"`
+			PicURL     string `json:"picURL"`
+		} `json:"links"`
+	} `json:"feedCard"`
+}
+
 // TextMessage create a message with Text type
 func (c *Client) TextMessage() error {
 
-	//Todo implement Client.TextMessage()
+	// Todo implement Client.TextMessage()
 
 	return nil
 }
@@ -27,7 +112,7 @@ func (c *Client) TextMessage() error {
 // LinkMessage create a message with Link type
 func (c *Client) LinkMessage() error {
 
-	//Todo implement Client.LinkMessage()
+	// Todo implement Client.LinkMessage()
 
 	return nil
 }
@@ -35,7 +120,7 @@ func (c *Client) LinkMessage() error {
 // MarkdownMessage create a message with Markdown type
 func (c *Client) MarkdownMessage() error {
 
-	//Todo implement Client.MarkdownMessage()
+	// Todo implement Client.MarkdownMessage()
 
 	return nil
 }
@@ -43,7 +128,7 @@ func (c *Client) MarkdownMessage() error {
 // ActionCardMessage create a message with ActionCard type
 func (c *Client) ActionCardMessage() error {
 
-	//Todo implement Client.ActionCardMessage()
+	// Todo implement Client.ActionCardMessage()
 
 	return nil
 }
@@ -51,9 +136,14 @@ func (c *Client) ActionCardMessage() error {
 // FeedCardMessage create a message with FeedCard type
 func (c *Client) FeedCardMessage() error {
 
-	//Todo implement Client.FeedCardMessage()
+	// Todo implement Client.FeedCardMessage()
 
 	return nil
+}
+
+func (c *Client) newRobot(body interface{}) (*http.Request, error) {
+	req, err := c.newRequest("POST", "/robot/send", body)
+	return req, err
 }
 
 func (c *Client) newRequest(method, path string, body interface{}) (*http.Request, error) {
