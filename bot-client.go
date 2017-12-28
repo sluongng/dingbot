@@ -18,8 +18,8 @@ type Client struct {
 }
 
 type respErr struct {
-	ErrCode int
-	ErrMsg  string
+	ErrCode int    `json:"errcode"`
+	ErrMsg  string `json:"errmsg"`
 }
 
 type coreMsg struct {
