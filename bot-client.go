@@ -26,16 +26,18 @@ type coreMsg struct {
 	MsgType string `json:"msgtype"`
 }
 
+type atTag struct {
+	AtMobiles []string `json:"atMobiles,omnitempty"`
+	IsAtAll   bool     `json:"isAtAll,omnitempty"`
+}
+
 // TextMessage is used to construct Text Message body
 type TextMessage struct {
 	*coreMsg
 	Text struct {
 		Content string `json:"content"`
 	} `json:"text"`
-	At struct {
-		AtMobile []string `json:"atMobiles,omnitempty"`
-		IsAtAll  bool     `json:"isAtAll,omnitempty"`
-	} `json:"at,omnitempty"`
+	At atTag `json:"at,omnitempty"`
 }
 
 // LinkMessage is used to construct Link Message body
@@ -56,10 +58,7 @@ type MarkdownMessage struct {
 		Title string `json:"title"`
 		Text  string `json:"text"`
 	} `json:"markdown"`
-	At struct {
-		AtMobiles []string `json:"atMobiles,omnitempty"`
-		IsAtAll   bool     `json:"isAtAll,omnitempty"`
-	} `json:"at,omnitempty"`
+	At atTag `json:"at,omnitempty"`
 }
 
 // SingleActionCardMessage is used to construct ActionCard Message body
