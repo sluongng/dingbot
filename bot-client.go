@@ -103,40 +103,22 @@ type FeedCardMessage struct {
 }
 
 // SendText create a message with Text type
-func (c *Client) SendText(textMsg TextMessage) error {
-	err := c.send(textMsg)
-	return err
-}
+func (c *Client) SendText(textMsg TextMessage) error { return c.send(textMsg) }
 
 // SendLink create a message with Link type
-func (c *Client) SendLink(linkMessage LinkMessage) error {
-	err := c.send(linkMessage)
-	return err
-}
+func (c *Client) SendLink(linkMessage LinkMessage) error { return c.send(linkMessage) }
 
 // SendMarkdown create a message with Markdown type
-func (c *Client) SendMarkdown(mdMessage MarkdownMessage) error {
-	err := c.send(mdMessage)
-	return err
-}
+func (c *Client) SendMarkdown(mdMessage MarkdownMessage) error { return c.send(mdMessage) }
 
 // SendSingleAction create a message with SingleAction type
-func (c *Client) SendSingleAction(actionCard SingleActionCardMessage) error {
-	err := c.send(actionCard)
-	return err
-}
+func (c *Client) SendSingleAction(actionCard SingleActionCardMessage) error { return c.send(actionCard) }
 
 // SendMutliAction create a message with MultiAction type
-func (c *Client) SendMutliAction(actionCard MultiActionCardMessage) error {
-	err := c.send(actionCard)
-	return err
-}
+func (c *Client) SendMutliAction(actionCard MultiActionCardMessage) error { return c.send(actionCard) }
 
 // SendFeed create a message with Feed type
-func (c *Client) SendFeed(feedCard FeedCardMessage) error {
-	err := c.send(feedCard)
-	return err
-}
+func (c *Client) SendFeed(feedCard FeedCardMessage) error { return c.send(feedCard) }
 
 func (c *Client) send(msg interface{}) error {
 	req, err := c.newRobot(msg)
