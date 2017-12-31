@@ -123,21 +123,21 @@ func (rs *RobotService) send(v interface{}) error {
 }
 
 // SendText create a message with Text type
-func (rs *RobotService) SendText(textMsg TextMessage) error { return rs.send(textMsg) }
+func (rs *RobotService) SendText(textMsg *TextMessage) error { return rs.send(textMsg) }
 
 // SendLink create a message with Link type
-func (rs *RobotService) SendLink(linkMessage LinkMessage) error { return rs.send(linkMessage) }
+func (rs *RobotService) SendLink(linkMessage *LinkMessage) error { return rs.send(linkMessage) }
 
 // SendMarkdown create a message with Markdown type
-func (rs *RobotService) SendMarkdown(mdMessage MarkdownMessage) error { return rs.send(mdMessage) }
+func (rs *RobotService) SendMarkdown(mdMessage *MarkdownMessage) error { return rs.send(mdMessage) }
 
 // SendSingleAction create a message with SingleAction type
-func (rs *RobotService) SendSingleAction(actionCard SingleActionCardMessage) error {
+func (rs *RobotService) SendSingleAction(actionCard *SingleActionCardMessage) error {
 	return rs.send(actionCard)
 }
 
 // SendMutliAction create a message with MultiAction type
-func (rs *RobotService) SendMutliAction(actionCard MultiActionCardMessage) error {
+func (rs *RobotService) SendMutliAction(actionCard *MultiActionCardMessage) error {
 	return rs.send(actionCard)
 }
 
