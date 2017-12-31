@@ -6,13 +6,18 @@ import (
 	"github.com/sluongng/dingbot"
 )
 
-const accessToken = "5465acf723849403cfddd8c3af9cb0bc4f3fc7f7624a468c810c05b4c5ff1e82"
+const accessToken = "***"
 
 func main() {
 	ChatBotService := dingbot.NewClient(accessToken).RobotService
-	msg := new(dingbot.TextMessage)
-	msg.MsgType = "text"
-	msg.Text.Content = "Sent From golang Dingbot"
+	msg := &dingbot.TextMessage{
+		MsgType: "text",
+		Text: struct {
+			Content string `json:"content"`
+		}{
+			Content: "May the force be with you",
+		},
+	}
 
 	err := ChatBotService.SendText(msg)
 	if err != nil {
