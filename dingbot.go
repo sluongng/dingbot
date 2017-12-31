@@ -1,23 +1,20 @@
 package dingbot
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"net/url"
+
+	"github.com/dghubble/sling"
 )
 
-// Client for DingBot integration
-type Client struct {
-	BaseURL     *url.URL
-	AccessToken string
-	UserAgent   string
-	httpClient  *http.Client
+const (
+	dingTalkAPI = "https://oapi.dingtalk.com"
+)
+
+type defaultParams struct {
+	AccessToken string `url:"access_token"`
 }
 
-type respErr struct {
+type responseError struct {
 	ErrCode int    `json:"errcode"`
 	ErrMsg  string `json:"errmsg"`
 }
@@ -101,89 +98,63 @@ type FeedCardMessage struct {
 	} `json:"feedCard"`
 }
 
-// SendText create a message with Text type
-func (c *Client) SendText(textMsg TextMessage) error { return c.send(textMsg) }
+// RobotService provides methods for sending messages
+type RobotService struct {
+	sling *sling.Sling
+}
 
-// SendLink create a message with Link type
-func (c *Client) SendLink(linkMessage LinkMessage) error { return c.send(linkMessage) }
+// NewRobotService returns a new RobotService
+func NewRobotService(sling *sling.Sling) *RobotService {
+	return &RobotService{
+		sling: sling.Path("/robot"),
+	}
+}
 
-// SendMarkdown create a message with Markdown type
-func (c *Client) SendMarkdown(mdMessage MarkdownMessage) error { return c.send(mdMessage) }
-
-// SendSingleAction create a message with SingleAction type
-func (c *Client) SendSingleAction(actionCard SingleActionCardMessage) error { return c.send(actionCard) }
-
-// SendMutliAction create a message with MultiAction type
-func (c *Client) SendMutliAction(actionCard MultiActionCardMessage) error { return c.send(actionCard) }
-
-// SendFeed create a message with Feed type
-func (c *Client) SendFeed(feedCard FeedCardMessage) error { return c.send(feedCard) }
-
-func (c *Client) send(msg interface{}) error {
-	req, err := c.newRobot(msg)
+func (rs *RobotService) send(v interface{}) error {
+	defaultError := new(responseError)
+	_, err := rs.sling.New().Post("/send").BodyJSON(v).ReceiveSuccess(defaultError)
 	if err != nil {
 		return err
 	}
-
-	var res respErr
-	_, err = c.do(req, &res)
-	if err != nil {
-		return err
+	if defaultError.ErrCode != 0 {
+		return fmt.Errorf(defaultError.ErrMsg)
 	}
-	if res.ErrCode != 0 {
-		return fmt.Errorf(res.ErrMsg)
-	}
-
 	return nil
 }
 
-func (c *Client) newRobot(body interface{}) (*http.Request, error) {
-	req, err := c.newRequest("POST", "/robot/send", body)
-	return req, err
+// SendText create a message with Text type
+func (rs *RobotService) SendText(textMsg TextMessage) error { return rs.send(textMsg) }
+
+// SendLink create a message with Link type
+func (rs *RobotService) SendLink(linkMessage LinkMessage) error { return rs.send(linkMessage) }
+
+// SendMarkdown create a message with Markdown type
+func (rs *RobotService) SendMarkdown(mdMessage MarkdownMessage) error { return rs.send(mdMessage) }
+
+// SendSingleAction create a message with SingleAction type
+func (rs *RobotService) SendSingleAction(actionCard SingleActionCardMessage) error {
+	return rs.send(actionCard)
 }
 
-func (c *Client) newRequest(method, path string, body interface{}) (*http.Request, error) {
-	// Set URL
-	rel := &url.URL{
-		Path:     path,
-		RawQuery: "access_token=" + c.AccessToken,
-	}
-	u := c.BaseURL.ResolveReference(rel)
-
-	// Set Body
-	var buf io.ReadWriter
-	if body != nil {
-		buf = new(bytes.Buffer)
-
-		err := json.NewEncoder(buf).Encode(body)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	// Create request
-	req, err := http.NewRequest(method, u.String(), buf)
-	if err != nil {
-		return nil, err
-	}
-
-	// Set Headers
-	if body != nil {
-		req.Header.Set("Content-Type", "application/json")
-	}
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("User-Agent", c.UserAgent)
-
-	return req, nil
+// SendMutliAction create a message with MultiAction type
+func (rs *RobotService) SendMutliAction(actionCard MultiActionCardMessage) error {
+	return rs.send(actionCard)
 }
 
-func (c *Client) do(req *http.Request, v interface{}) (*http.Response, error) {
-	res, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
+// Client is a General DingTalk client which contains many services
+type Client struct {
+	sling        *sling.Sling
+	RobotService *RobotService
+}
 
-	err = json.NewDecoder(res.Body).Decode(v)
-	return res, err
+// NewClient returns a new Client
+func NewClient(accessToken string) *Client {
+	base := sling.New().
+		Client(nil).
+		Base(dingTalkAPI).
+		QueryStruct(&defaultParams{AccessToken: accessToken})
+	return &Client{
+		sling:        base,
+		RobotService: NewRobotService(base.New()),
+	}
 }
