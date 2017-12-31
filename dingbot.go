@@ -102,14 +102,14 @@ type RobotService struct {
 // NewRobotService returns a new RobotService
 func NewRobotService(sling *sling.Sling) *RobotService {
 	return &RobotService{
-		sling: sling.Path("/robot"),
+		sling: sling.Post("/robot/send"),
 	}
 }
 
 func (rs *RobotService) send(v interface{}) error {
 	defaultError := new(responseError)
 
-	c := rs.sling.New().Post("/send").BodyJSON(v)
+	c := rs.sling.BodyJSON(v)
 	_, err := c.ReceiveSuccess(defaultError)
 	if err != nil {
 		return err
