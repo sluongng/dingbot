@@ -1,11 +1,12 @@
-package model
+package dingbot
 
 // LinkMessage is used to construct Link Message body
 type LinkMessage struct {
-	MsgType string `json:"msgtype"`
-	Link    *Link  `json:"link"`
+	*baseMessage
+	Link *Link `json:"link"`
 }
 
+// Link contains basic information for a Link message
 type Link struct {
 	Text       string `json:"text"`
 	Title      string `json:"title"`
@@ -13,9 +14,10 @@ type Link struct {
 	MessageURL string `json:"messageUrl"`
 }
 
+// NewLinkMessage help create a Link Message
 func NewLinkMessage(text string, title string, picURL string, msgURL string) *LinkMessage {
 	return &LinkMessage{
-		MsgType: "link",
+		baseMessage: &baseMessage{MsgType: "link"},
 		Link: &Link{
 			Text:       text,
 			Title:      title,
@@ -23,4 +25,10 @@ func NewLinkMessage(text string, title string, picURL string, msgURL string) *Li
 			MessageURL: msgURL,
 		},
 	}
+}
+
+func (msg *LinkMessage) Send(accessToken string) error {
+	defaultError := new(responseError)
+	_, err := msg.baseMessage.GetClient(accessToken).New().BodyJSON(msg).ReceiveSuccess(defaultError)
+	return err
 }

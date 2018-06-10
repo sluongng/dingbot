@@ -1,10 +1,10 @@
-package model
+package dingbot
 
 // SingleActionCardMessage is used to construct ActionCard Message body
 type ActionCardMessage struct {
-	MsgType          string            `json:"msgtype"`
-	SingleActionCard *SingleActionCard `json:"actionCard,omitempty"`
-	MultiActionCard  *MultiActionCard  `json:"actionCard,omitempty"`
+	baseMessage
+	SingleActionCard SingleActionCard `json:"actionCard,omitempty"`
+	MultiActionCard  MultiActionCard  `json:"actionCard,omitempty"`
 }
 
 type baseActionCard struct {
@@ -16,7 +16,7 @@ type baseActionCard struct {
 
 // SingleActionCard is an ActionCard with single button
 type SingleActionCard struct {
-	*baseActionCard
+	baseActionCard
 	SingleTitle string `json:"singleTitle,omitempty"`
 	SingleURL   string `json:"singleURL,omitempty"`
 }
@@ -29,7 +29,7 @@ type Button struct {
 
 // MultiActionCard is an ActionCard with multiple buttons
 type MultiActionCard struct {
-	*baseActionCard
+	baseActionCard
 	Buttons []Button `json:"btns,omitempty"`
 }
 
@@ -43,9 +43,9 @@ func NewSingleActionCard(
 	buttonURL string,
 ) *ActionCardMessage {
 	return &ActionCardMessage{
-		MsgType: "actionCard",
-		SingleActionCard: &SingleActionCard{
-			baseActionCard: &baseActionCard{
+		baseMessage: baseMessage{MsgType: "actionCard"},
+		SingleActionCard: SingleActionCard{
+			baseActionCard: baseActionCard{
 				Title:          title,
 				Text:           text,
 				HideAvatar:     hideAvatar,
@@ -66,9 +66,9 @@ func NewMultiActionCardBuilder(
 	buttons []Button,
 ) *ActionCardMessage {
 	return &ActionCardMessage{
-		MsgType: "actionCard",
-		MultiActionCard: &MultiActionCard{
-			baseActionCard: &baseActionCard{
+		baseMessage: baseMessage{MsgType: "actionCard"},
+		MultiActionCard: MultiActionCard{
+			baseActionCard: baseActionCard{
 				Title:          title,
 				Text:           text,
 				HideAvatar:     hideAvatar,
@@ -77,4 +77,10 @@ func NewMultiActionCardBuilder(
 			Buttons: buttons,
 		},
 	}
+}
+
+func (msg *ActionCardMessage) Send(accessToken string) error {
+	defaultError := new(responseError)
+	_, err := msg.baseMessage.GetClient(accessToken).New().BodyJSON(msg).ReceiveSuccess(defaultError)
+	return err
 }

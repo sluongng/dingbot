@@ -2,28 +2,28 @@
 
 ## Description
 
-a Client library written in Golang to send chatbot messages to [DingTalk](https://www.dingtalk.com/en) of Alibaba
+- Massively reworked to make the library easier to use
+- Struct comes with builder and opinionated Simple Message that can be used immediately
+- Intuitive methods
 
-- Official documentation for bot integration can be found [here](https://open-doc.dingtalk.com/docs/doc.htm?treeId=257&articleId=105735&docType=1) (use Google Translate for English)
+## How to use
 
-## Feature
+``` go
+// If your webhook is https://oapi.dingtalk.com/robot/send?access_token=123456ABCD
+// your accessToken is 123456ABCD
+const accessToken = "YOUR_ACCESS_TOKEN"
 
-- Basic integration with all message types of Custom Bot
+func main() {
+	_ = dingbot.SimpleTextMessage("Xin Chao 123").Send(accessToken)
+}
+```
 
-## To Do
+- See [examples](./example/main.go)
 
-- [ ] Unit Tests
-- [ ] More Testing
-- [X] Examples 
-- [ ] User Guide 
-- [ ] Improve Documentation
-- [ ] More examples
-- [X] Refactor to https://github.com/dghubble/sling to increase code readability
-- [ ] Improve user experience by simplifying message structures creation
+## TODO
 
-## Contribution
-
-- Please consider submitting PR for this repo
+- [ ]  Proper testing
+- [ ]  Improve code style
 
 ## Others
 

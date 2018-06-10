@@ -1,8 +1,8 @@
-package model
+package dingbot
 
 // FeedCardMessage is used to construct FeedCard Message body
 type FeedCardMessage struct {
-	MsgType  string    `json:"msgtype"`
+	*baseMessage
 	FeedCard *FeedCard `json:"feedCard"`
 }
 
@@ -34,9 +34,9 @@ func (builder *FeedCardBuilder) addLink(title string, msgURL string, picURL stri
 		builder.Links = append(
 			builder.Links,
 			&FeedCardLink{
-				Title: title,
+				Title:      title,
 				MessageURL: msgURL,
-				PicURL: picURL,
+				PicURL:     picURL,
 			},
 		)
 	}
@@ -46,7 +46,13 @@ func (builder *FeedCardBuilder) addLink(title string, msgURL string, picURL stri
 
 func (builder *FeedCardBuilder) build() *FeedCardMessage {
 	return &FeedCardMessage{
-		MsgType:  "feedcard",
-		FeedCard: &FeedCard{Links: builder.Links},
+		baseMessage: &baseMessage{MsgType: "feedCard"},
+		FeedCard:    &FeedCard{Links: builder.Links},
 	}
+}
+
+func (msg *FeedCardMessage) Send(accessToken string) error {
+	defaultError := new(responseError)
+	_, err := msg.baseMessage.GetClient(accessToken).New().BodyJSON(msg).ReceiveSuccess(defaultError)
+	return err
 }
