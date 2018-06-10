@@ -12,6 +12,10 @@ func NewAtTag(mobiles []string, isAtAll bool) *AtTag {
 	}
 }
 
-func SimpleAtTag() *AtTag {
+func EmptyAtTag() *AtTag {
 	return NewAtTag([]string{}, false)
+}
+
+func SingleAtTag(mobileNumber string) *AtTag {
+	return NewAtTag([]string{mobileNumber}, true)
 }
