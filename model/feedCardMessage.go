@@ -26,14 +26,18 @@ func NewFeedCardBuilder() *FeedCardBuilder {
 func (builder *FeedCardBuilder) addLink(title string, msgURL string, picURL string) *FeedCardBuilder {
 	if builder.Links != nil || len(builder.Links) <= 0 {
 		builder.Links = []*FeedCardLink{{
-			Title: title,
+			Title:      title,
 			MessageURL: msgURL,
-			PicURL: picURL,
+			PicURL:     picURL,
 		}}
 	} else {
 		builder.Links = append(
 			builder.Links,
-			&FeedCardLink{Title: title, MessageURL: msgURL, PicURL: picURL},
+			&FeedCardLink{
+				Title: title,
+				MessageURL: msgURL,
+				PicURL: picURL,
+			},
 		)
 	}
 
