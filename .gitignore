@@ -1,2 +1,5 @@
 example/debug
 .vscode
+.idea
+
+*.swp
